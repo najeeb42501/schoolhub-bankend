@@ -3,6 +3,7 @@ const express = require("express");
 const router = express.Router();
 const Schools = require("../models/schoolModel");
 const AllUsers = require("../models/allUsersModel");
+const Users = require("../models/userModel");
 
 router.post("/createSchoolProfile", async (req, res) => {
   console.log("Signup request call");
@@ -46,13 +47,47 @@ router.post("/createSchoolProfile", async (req, res) => {
   }
 });
 
-// adminRoutes.js
 router.get("/schools", async (req, res) => {
   try {
     const schools = await Schools.find();
     res.status(200).json(schools);
   } catch (error) {
     console.error("Error fetching schools:", error);
+    res.status(500).json({ message: "Server Error" });
+  }
+});
+
+router.get("/users", async (req, res) => {
+  try {
+    const schools = await Users.find();
+    res.status(200).json(schools);
+  } catch (error) {
+    console.error("Error fetching schools:", error);
+    res.status(500).json({ message: "Server Error" });
+  }
+});
+
+// adminRoutes.js
+router.delete("/deleteSchool/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    await Schools.findByIdAndDelete(id);
+    await AllUsers.findByIdAndDelete(id);
+    res.status(200).json({ message: "School deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting school:", error);
+    res.status(500).json({ message: "Server Error" });
+  }
+});
+
+router.delete("/deleteUser/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    await Users.findByIdAndDelete(id);
+    await AllUsers.findByIdAndDelete(id);
+    res.status(200).json({ message: "School deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting school:", error);
     res.status(500).json({ message: "Server Error" });
   }
 });
