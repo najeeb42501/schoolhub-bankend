@@ -3,6 +3,8 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 const User = require("./models/userModel");
 const authRoutes = require("./routes/auth.js");
+const adminRoutes = require("./routes/adminRoutes.js");
+//const userRoutes = require("./routes/registeredUsers.js");
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -22,20 +24,21 @@ mongoose
     console.error("MongoDB connection error:", err);
   });
 
-// Define a GET route to fetch all users
-app.get("/users", async (req, res) => {
-  try {
-    const users = await User.find();
-    console.log("Users  successfully:", users);
-    res.json(users);
-  } catch (error) {
-    console.error("Error fetching users:", error);
-    res.status(500).json({ error: error.message });
-  }
-});
-
 // Mount the auth routes
 app.use("/auth", authRoutes);
+app.use("/admin", adminRoutes);
+
+// Define a GET route to fetch all users
+// Node.js backend (Express example)
+app.get("/users", async (req, res) => {
+  try {
+    const totalUsers = await User.countDocuments({ type: "user" });
+    const totalSchools = await User.countDocuments({ type: "school" });
+    res.json({ totalUsers, totalSchools });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to get user counts" });
+  }
+});
 
 // Start server
 app.listen(port, () => {

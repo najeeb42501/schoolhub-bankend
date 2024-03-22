@@ -1,13 +1,13 @@
 const mongoose = require("mongoose");
 
-const userSchema = new mongoose.Schema({
+const schoolSchema = new mongoose.Schema({
   email: {
     type: String,
     required: true,
     unique: true,
     trim: true,
   },
-  username: {
+  school_name: {
     type: String,
     required: true,
     unique: true,
@@ -16,21 +16,14 @@ const userSchema = new mongoose.Schema({
   city: {
     type: String,
     required: true,
-    unique: true,
     trim: true,
   },
   password: {
     type: String,
     required: true,
   },
-  type: {
-    type: String,
-    enum: ["user"],
-    required: true,
-  },
-  // Additional fields specific to each type of user can be added here
 });
 
-const Users = mongoose.model("users", userSchema);
+const Schools = mongoose.model("schools", schoolSchema);
 
-module.exports = Users;
+module.exports = Schools;
