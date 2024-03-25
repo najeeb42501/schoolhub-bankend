@@ -1,9 +1,12 @@
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
-const User = require("./models/userModel");
+const Users = require("./models/userModel");
 const authRoutes = require("./routes/auth.js");
 const adminRoutes = require("./routes/adminRoutes.js");
+const editSchoolProfile = require("./routes/schoolProfile.js");
+const getSchoolData = require("./routes/getSchoolData.js");
+const Schools = require("./models/schoolModel.js");
 //const userRoutes = require("./routes/registeredUsers.js");
 
 const app = express();
@@ -27,13 +30,15 @@ mongoose
 // Mount the auth routes
 app.use("/auth", authRoutes);
 app.use("/admin", adminRoutes);
+app.use("/editSchoolProile", editSchoolProfile);
+app.use("/getSchoolData", getSchoolData);
 
 // Define a GET route to fetch all users
 // Node.js backend (Express example)
 app.get("/users", async (req, res) => {
   try {
-    const totalUsers = await User.countDocuments({ type: "user" });
-    const totalSchools = await User.countDocuments({ type: "school" });
+    const totalUsers = await Users.countDocuments();
+    const totalSchools = await Schools.countDocuments();
     res.json({ totalUsers, totalSchools });
   } catch (error) {
     res.status(500).json({ error: "Failed to get user counts" });
