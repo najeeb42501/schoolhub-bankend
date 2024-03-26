@@ -3,6 +3,7 @@ const express = require("express");
 const router = express.Router();
 const SchoolOverview = require("../models/edit-school-profile/schoolOverviewModel");
 const SchoolAdmission = require("../models/edit-school-profile/schoolAdmissionModel");
+const SchoolContact = require("../models/edit-school-profile/schoolContactModel");
 
 router.put("/save-so-data/:id", async (req, res) => {
   console.log("School Overview save data call");
@@ -23,6 +24,13 @@ router.put("/save-so-data/:id", async (req, res) => {
     } = req.body;
 
     const schoolId = req.params.id; // Extract schoolId from the URL
+
+    console.log(
+      "so DATA : " + schoolId,
+      schoolSystem,
+      schoolLevel,
+      enrolledStudents
+    );
 
     // Check if school overview data already exists for the given schoolId
     let schoolOverview = await SchoolOverview.findOne({ schoolId });
@@ -71,6 +79,7 @@ router.put("/save-so-data/:id", async (req, res) => {
 });
 
 router.put("/save-sa-data/:id", async (req, res) => {
+  console.log("Save admiision data call");
   try {
     const { openingDate, closingDate, criteria, process, requiredDocuments } =
       req.body;
@@ -108,6 +117,48 @@ router.put("/save-sa-data/:id", async (req, res) => {
   } catch (error) {
     console.error("Error saving school admission data:", error);
     res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+// PUT route to save or update school contact details
+router.put("/save-school-contact-data/:id", async (req, res) => {
+  console.log("Save school contact data call");
+  const {
+    schoolID,
+    schoolMobileNo,
+    schoolEmail,
+    schoolWebsite,
+    schoolAddress,
+  } = req.body;
+
+  console.log(schoolMobileNo);
+  try {
+    let schoolContact = await SchoolContact.findOne({ schoolID });
+
+    if (!schoolContact) {
+      schoolContact = new SchoolContact({
+        schoolID,
+        schoolMobileNo,
+        schoolEmail,
+        schoolWebsite,
+        schoolAddress,
+      });
+
+      await schoolContact.save();
+      return res.status(201).json({ saved: true, data: schoolContact });
+    }
+
+    // Update existing school contact details
+    schoolContact.schoolMobileNo = schoolMobileNo;
+    schoolContact.schoolEmail = schoolEmail;
+    schoolContact.schoolWebsite = schoolWebsite;
+    schoolContact.schoolAddress = schoolAddress;
+
+    await schoolContact.save();
+    return res.status(200).json({ saved: true, data: schoolContact });
+  } catch (error) {
+    console.error("Error saving/updating school contact details:", error);
+    return res.status(500).json({ saved: false, error: error.message });
   }
 });
 

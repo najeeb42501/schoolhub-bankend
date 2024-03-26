@@ -30,8 +30,9 @@ mongoose
 // Mount the auth routes
 app.use("/auth", authRoutes);
 app.use("/admin", adminRoutes);
-app.use("/editSchoolProile", editSchoolProfile);
+app.use("/editSchoolProfile", editSchoolProfile);
 app.use("/getSchoolData", getSchoolData);
+app.use("/uploads", express.static("uploads"));
 
 // Define a GET route to fetch all users
 // Node.js backend (Express example)
