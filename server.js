@@ -8,13 +8,14 @@ const editSchoolProfile = require("./routes/schoolProfile.js");
 const getSchoolData = require("./routes/getSchoolData.js");
 const Schools = require("./models/schoolModel.js");
 //const userRoutes = require("./routes/registeredUsers.js");
+const uploads = require("./middlewares/upload.js");
 
 const app = express();
 const port = process.env.PORT || 5000;
 
 app.use(cors());
 app.use(express.json());
-
+app.use(express.static("public"));
 // MongoDB connection
 const MONGODB_URI = "mongodb://127.0.0.1:27017/SCHOOLSHUB_DATABASE";
 
@@ -32,6 +33,12 @@ app.use("/auth", authRoutes);
 app.use("/admin", adminRoutes);
 app.use("/editSchoolProfile", editSchoolProfile);
 app.use("/getSchoolData", getSchoolData);
+
+// app.use(
+//   "/gallery-content",
+//   uploads.fields([{ name: "images" }]),
+//   controllerFunction
+// );
 app.use("/uploads", express.static("uploads"));
 
 // Define a GET route to fetch all users

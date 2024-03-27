@@ -4,6 +4,8 @@ const router = express.Router();
 const SchoolOverview = require("../models/edit-school-profile/schoolOverviewModel");
 const SchoolAdmission = require("../models/edit-school-profile/schoolAdmissionModel");
 const SchoolContact = require("../models/edit-school-profile/schoolContactModel");
+const SchoolCurriculum = require("../models/edit-school-profile/schoolCurriculumModel");
+const SchoolActivities = require("../models/edit-school-profile/schoolActivitiesModel");
 
 // GET route to fetch school overview data
 router.get("/school-overview/:id", async (req, res) => {
@@ -51,6 +53,46 @@ router.get("/school-contact/:id", async (req, res) => {
     res.status(200).json(schoolContact);
   } catch (error) {
     console.error("Error fetching school data:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+router.get("/school-curriculum/:id", async (req, res) => {
+  console.log("Get school curriculum data call");
+  try {
+    const id = req.params.id;
+    console.log(id);
+    const schoolCurriculum = await SchoolCurriculum.findOne({ schoolID: id });
+    console.log("CC : ", schoolCurriculum);
+    if (!schoolCurriculum) {
+      return res
+        .status(404)
+        .json({ message: "School curriculum data not found" });
+    }
+    console.log("CCC");
+    res.status(200).json(schoolCurriculum);
+  } catch (error) {
+    console.error("Error fetching school curriculum data:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+router.get("/school-activities/:id", async (req, res) => {
+  console.log("Get school activities data call");
+  try {
+    const id = req.params.id;
+
+    const schoolActivities = await SchoolActivities.findOne({ schoolID: id });
+    console.log("CC : ", schoolActivities);
+    if (!schoolActivities) {
+      return res
+        .status(404)
+        .json({ message: "School activities data not found" });
+    }
+    console.log("CCC");
+    res.status(200).json(schoolActivities);
+  } catch (error) {
+    console.error("Error fetching school activities data:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 });
