@@ -6,6 +6,7 @@ const SchoolAdmission = require("../models/edit-school-profile/schoolAdmissionMo
 const SchoolContact = require("../models/edit-school-profile/schoolContactModel");
 const SchoolCurriculum = require("../models/edit-school-profile/schoolCurriculumModel");
 const SchoolActivities = require("../models/edit-school-profile/schoolActivitiesModel");
+const SchoolFee = require("../models/edit-school-profile/schoolFeeStructureModel");
 
 const uploads = require("../middlewares/upload.js");
 
@@ -237,6 +238,35 @@ router.post("/saveActivities/:id", async (req, res) => {
   } catch (error) {
     console.error("Error saving activities:", error);
     res.status(500).json({ error: "Failed to save activities" });
+  }
+});
+
+router.put("/save-school-fee-structure/:id", async (req, res) => {
+  console.log("save fee data call");
+  try {
+    const id = req.params.id;
+    const feeList = req.body;
+
+    // Check if data exists for the given school ID
+    const existingData = await SchoolFee.findOne({ schoolID: id });
+
+    if (existingData) {
+      // If data exists, update it
+      existingData.feeList = feeList; // Update the feeList with the new data
+      const updatedData = await existingData.save();
+      res.json(updatedData);
+    } else {
+      // If no data found, create new data
+      const newData = new SchoolFee({
+        schoolID: id,
+        feeList: feeList, // Use the feeList from the request body
+      });
+      const savedData = await newData.save();
+      res.json(savedData);
+    }
+  } catch (error) {
+    console.error("Error saving data:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 

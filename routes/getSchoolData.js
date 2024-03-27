@@ -6,6 +6,7 @@ const SchoolAdmission = require("../models/edit-school-profile/schoolAdmissionMo
 const SchoolContact = require("../models/edit-school-profile/schoolContactModel");
 const SchoolCurriculum = require("../models/edit-school-profile/schoolCurriculumModel");
 const SchoolActivities = require("../models/edit-school-profile/schoolActivitiesModel");
+const SchoolFee = require("../models/edit-school-profile/schoolFeeStructureModel");
 
 // GET route to fetch school overview data
 router.get("/school-overview/:id", async (req, res) => {
@@ -94,6 +95,24 @@ router.get("/school-activities/:id", async (req, res) => {
   } catch (error) {
     console.error("Error fetching school activities data:", error);
     res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+router.get("/school-fee-structure/:id", async (req, res) => {
+  console.log("get fee data call");
+  try {
+    const id = req.params.id;
+    // Find the data for the given school ID
+    const data = await SchoolFee.findOne({ schoolID: id });
+
+    if (!data) {
+      return res.status(404).json({ error: "Data not found" });
+    }
+
+    res.json(data);
+  } catch (error) {
+    console.error("Error getting data:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 
