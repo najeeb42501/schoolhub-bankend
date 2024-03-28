@@ -7,6 +7,7 @@ const SchoolContact = require("../models/edit-school-profile/schoolContactModel"
 const SchoolCurriculum = require("../models/edit-school-profile/schoolCurriculumModel");
 const SchoolActivities = require("../models/edit-school-profile/schoolActivitiesModel");
 const SchoolFee = require("../models/edit-school-profile/schoolFeeStructureModel");
+const SchoolAbout = require("../models/edit-school-profile/schoolAboutModel");
 
 // GET route to fetch school overview data
 router.get("/school-overview/:id", async (req, res) => {
@@ -104,6 +105,24 @@ router.get("/school-fee-structure/:id", async (req, res) => {
     const id = req.params.id;
     // Find the data for the given school ID
     const data = await SchoolFee.findOne({ schoolID: id });
+
+    if (!data) {
+      return res.status(404).json({ error: "Data not found" });
+    }
+
+    res.json(data);
+  } catch (error) {
+    console.error("Error getting data:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.get("/school-about/:id", async (req, res) => {
+  console.log("get about data call");
+  try {
+    const id = req.params.id;
+    // Find the data for the given school ID
+    const data = await SchoolAbout.findOne({ schoolID: id });
 
     if (!data) {
       return res.status(404).json({ error: "Data not found" });

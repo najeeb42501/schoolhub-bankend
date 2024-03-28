@@ -7,6 +7,7 @@ const SchoolContact = require("../models/edit-school-profile/schoolContactModel"
 const SchoolCurriculum = require("../models/edit-school-profile/schoolCurriculumModel");
 const SchoolActivities = require("../models/edit-school-profile/schoolActivitiesModel");
 const SchoolFee = require("../models/edit-school-profile/schoolFeeStructureModel");
+const AboutSchool = require("../models/edit-school-profile/schoolAboutModel");
 
 const uploads = require("../middlewares/upload.js");
 
@@ -267,6 +268,33 @@ router.put("/save-school-fee-structure/:id", async (req, res) => {
   } catch (error) {
     console.error("Error saving data:", error);
     res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.put("/save-school-about-data/:id", async (req, res) => {
+  console.log("save about school data call");
+  const { aboutSchoolDescription, foundedDate } = req.body;
+
+  try {
+    const schoolID = req.params.id;
+    console.log("data : ", schoolID, foundedDate);
+
+    const filter = { schoolID: schoolID };
+    const update = {
+      aboutSchoolDescription: aboutSchoolDescription,
+      foundedDate: foundedDate,
+    };
+    const options = { new: true, upsert: true };
+
+    const aboutSchool = await AboutSchool.findOneAndUpdate(
+      filter,
+      update,
+      options
+    );
+    res.status(200).json(aboutSchool);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to update school profile" });
   }
 });
 
