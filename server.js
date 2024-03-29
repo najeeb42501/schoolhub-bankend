@@ -6,7 +6,9 @@ const authRoutes = require("./routes/auth.js");
 const adminRoutes = require("./routes/adminRoutes.js");
 const editSchoolProfile = require("./routes/schoolProfile.js");
 const getSchoolData = require("./routes/getSchoolData.js");
+const getAllSchools = require("./routes/getAllSchools.js");
 const Schools = require("./models/schoolModel.js");
+
 //const userRoutes = require("./routes/registeredUsers.js");
 const uploads = require("./middlewares/upload.js");
 
@@ -33,6 +35,7 @@ app.use("/auth", authRoutes);
 app.use("/admin", adminRoutes);
 app.use("/editSchoolProfile", editSchoolProfile);
 app.use("/getSchoolData", getSchoolData);
+app.use("/getAllSchools", getAllSchools);
 
 // app.use(
 //   "/gallery-content",
