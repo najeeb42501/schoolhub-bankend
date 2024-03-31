@@ -57,7 +57,6 @@ app.get("/users", async (req, res) => {
   }
 });
 
-//const APU_KEY = "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";
 const API_KEY = process.env.API_KEY;
 
 app.post("/ai", async (req, res) => {
