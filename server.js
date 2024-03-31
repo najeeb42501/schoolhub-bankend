@@ -8,6 +8,7 @@ const editSchoolProfile = require("./routes/schoolProfile.js");
 const getSchoolData = require("./routes/getSchoolData.js");
 const getAllSchools = require("./routes/getAllSchools.js");
 const Schools = require("./models/schoolModel.js");
+require("dotenv").config();
 
 //const userRoutes = require("./routes/registeredUsers.js");
 const uploads = require("./middlewares/upload.js");
@@ -53,6 +54,36 @@ app.get("/users", async (req, res) => {
     res.json({ totalUsers, totalSchools });
   } catch (error) {
     res.status(500).json({ error: "Failed to get user counts" });
+  }
+});
+
+//const APU_KEY = "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";
+const API_KEY = process.env.API_KEY;
+
+app.post("/ai", async (req, res) => {
+  console.log("GPT AI CALL", req.body);
+  const prompt = req.body.message;
+  const options = {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${API_KEY}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      model: "gpt-3.5-turbo",
+      messages: [{ role: "user", content: prompt }],
+      max_tokens: 500,
+    }),
+  };
+  try {
+    const response = await fetch(
+      "https://api.openai.com/v1/chat/completions",
+      options
+    );
+    const data = await response.json();
+    res.send(data);
+  } catch (error) {
+    console.error(error);
   }
 });
 
