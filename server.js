@@ -61,6 +61,7 @@ app.get("/users", async (req, res) => {
 const API_KEY = process.env.API_KEY;
 
 app.post("/ai", async (req, res) => {
+  console.log("GPT AI CALL", req.body);
   const prompt = req.body.message;
   const options = {
     method: "POST",
