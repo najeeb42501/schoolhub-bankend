@@ -56,6 +56,35 @@ app.get("/users", async (req, res) => {
   }
 });
 
+const APU_KEY = "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";
+
+app.post("/ai", async (req, res) => {
+  console.log("GPT AI CALL", req.body);
+  const prompt = req.body.message;
+  const options = {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${APU_KEY}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      model: "gpt-3.5-turbo",
+      messages: [{ role: "user", content: prompt }],
+      max_tokens: 500,
+    }),
+  };
+  try {
+    const response = await fetch(
+      "https://api.openai.com/v1/chat/completions",
+      options
+    );
+    const data = await response.json();
+    res.send(data);
+  } catch (error) {
+    console.error(error);
+  }
+});
+
 // Start server
 app.listen(port, () => {
   console.log(`Server is running on port: ${port}`);

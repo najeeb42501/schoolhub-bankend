@@ -10,10 +10,10 @@ const SchoolFee = require("../models/edit-school-profile/schoolFeeStructureModel
 const SchoolAbout = require("../models/edit-school-profile/schoolAboutModel");
 
 // GET route to fetch school overview data
-router.get("/school-overview/:id", async (req, res) => {
+router.get("/school-overview/:schoolID", async (req, res) => {
   console.log("Get SO data call");
   try {
-    const id = req.params.id;
+    const id = req.params.schoolID;
     const schoolOverview = await SchoolOverview.findOne({ schoolId: id });
     if (!schoolOverview) {
       return res.status(404).json({ message: "School data not found" });
@@ -26,10 +26,11 @@ router.get("/school-overview/:id", async (req, res) => {
 });
 
 // GET route to fetch school admission data
-router.get("/school-admission/:id", async (req, res) => {
+router.get("/school-admission/:schoolID", async (req, res) => {
   console.log("Get school admission data call");
   try {
-    const id = req.params.id;
+    const id = req.params.schoolID;
+    console.log("ID : ", id);
     const schoolAdmission = await SchoolAdmission.findOne({ schoolId: id });
     if (!schoolAdmission) {
       return res
@@ -43,10 +44,10 @@ router.get("/school-admission/:id", async (req, res) => {
   }
 });
 
-router.get("/school-contact/:id", async (req, res) => {
+router.get("/school-contact/:schoolID", async (req, res) => {
   console.log("Get contact data call");
   try {
-    const id = req.params.id;
+    const id = req.params.schoolID;
     console.log(id);
     const schoolContact = await SchoolContact.findOne({ schoolID: id });
     if (!schoolContact) {
@@ -59,10 +60,10 @@ router.get("/school-contact/:id", async (req, res) => {
   }
 });
 
-router.get("/school-curriculum/:id", async (req, res) => {
+router.get("/school-curriculum/:schoolID", async (req, res) => {
   console.log("Get school curriculum data call");
   try {
-    const id = req.params.id;
+    const id = req.params.schoolID;
     console.log(id);
     const schoolCurriculum = await SchoolCurriculum.findOne({ schoolID: id });
     console.log("CC : ", schoolCurriculum);
@@ -79,10 +80,10 @@ router.get("/school-curriculum/:id", async (req, res) => {
   }
 });
 
-router.get("/school-activities/:id", async (req, res) => {
+router.get("/school-activities/:schoolID", async (req, res) => {
   console.log("Get school activities data call");
   try {
-    const id = req.params.id;
+    const id = req.params.schoolID;
 
     const schoolActivities = await SchoolActivities.findOne({ schoolID: id });
     console.log("CC : ", schoolActivities);
@@ -99,10 +100,10 @@ router.get("/school-activities/:id", async (req, res) => {
   }
 });
 
-router.get("/school-fee-structure/:id", async (req, res) => {
+router.get("/school-fee-structure/:schoolID", async (req, res) => {
   console.log("get fee data call");
   try {
-    const id = req.params.id;
+    const id = req.params.schoolID;
     // Find the data for the given school ID
     const data = await SchoolFee.findOne({ schoolID: id });
 
@@ -117,13 +118,14 @@ router.get("/school-fee-structure/:id", async (req, res) => {
   }
 });
 
-router.get("/school-about/:id", async (req, res) => {
+router.get("/school-about/:schoolID", async (req, res) => {
   console.log("get about data call");
   try {
-    const id = req.params.id;
+    const id = req.params.schoolID;
+    console.log("About sID: ", id);
     // Find the data for the given school ID
     const data = await SchoolAbout.findOne({ schoolID: id });
-
+    console.log("aa");
     if (!data) {
       return res.status(404).json({ error: "Data not found" });
     }
