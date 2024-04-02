@@ -52,4 +52,42 @@ router.get("/schools", async (req, res) => {
   }
 });
 
+// GET request to fetch combined school data
+router.get("/allSchools", async (req, res) => {
+  console.log("Api schools merging call data");
+  try {
+    const result = await Schools.aggregate([
+      {
+        $lookup: {
+          from: "schools_overviews", // Ensure this matches the actual collection name in MongoDB
+          localField: "_id",
+          foreignField: "schoolId",
+          as: "overview",
+        },
+      },
+      {
+        $unwind: "$overview",
+      },
+      {
+        $project: {
+          schoolID: "$_id",
+          schoolName: "$overview.schoolName", // Assuming you want the school's name from the schools collection
+          schoolCity: "$city",
+          schoolProfilePhoto: "$overview.schoolProfilePhoto",
+          schoolLevel: "$overview.schoolLevel",
+          schoolMedium: "$overview.schoolMedium", // Assuming 'medium' maps to 'schoolMedium'
+          schoolSystem: "$overview.schoolSystem", // Assuming 'System' maps to 'schoolSystem'
+          schoolType: "$overview.schoolingType", // Assuming 'type' maps to 'schoolingType'
+          enrolledStudents: "$overview.enrolledStudents",
+          teachers: "$overview.numberOfTeachers", // Assuming 'teachers' maps to 'numberOfTeachers'
+        },
+      },
+    ]);
+    res.json(result);
+  } catch (err) {
+    console.error("Failed to fetch school data:", err);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
 module.exports = router;

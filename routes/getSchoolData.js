@@ -1,6 +1,7 @@
 // routes/schoolOverview.js
 const express = require("express");
 const router = express.Router();
+const Schools = require("../models/schoolModel");
 const SchoolOverview = require("../models/edit-school-profile/schoolOverviewModel");
 const SchoolAdmission = require("../models/edit-school-profile/schoolAdmissionModel");
 const SchoolContact = require("../models/edit-school-profile/schoolContactModel");
