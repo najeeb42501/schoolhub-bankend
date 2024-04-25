@@ -8,6 +8,8 @@ const editSchoolProfile = require("./routes/schoolProfile.js");
 const getSchoolData = require("./routes/getSchoolData.js");
 const getAllSchools = require("./routes/getAllSchools.js");
 const Schools = require("./models/schoolModel.js");
+
+
 require("dotenv").config();
 
 //const userRoutes = require("./routes/registeredUsers.js");
@@ -85,6 +87,7 @@ app.post("/ai", async (req, res) => {
     console.error(error);
   }
 });
+
 
 // Start server
 app.listen(port, () => {

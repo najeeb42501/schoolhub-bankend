@@ -9,6 +9,7 @@ const SchoolCurriculum = require("../models/edit-school-profile/schoolCurriculum
 const SchoolActivities = require("../models/edit-school-profile/schoolActivitiesModel");
 const SchoolFee = require("../models/edit-school-profile/schoolFeeStructureModel");
 const SchoolAbout = require("../models/edit-school-profile/schoolAboutModel");
+const SchoolReviews = require("../models/edit-school-profile/userReviewModel.js");
 
 // GET route to fetch school overview data
 router.get("/school-overview/:schoolID", async (req, res) => {
@@ -134,6 +135,25 @@ router.get("/school-about/:schoolID", async (req, res) => {
     res.json(data);
   } catch (error) {
     console.error("Error getting data:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.get("/school-reviews/:schoolID", async (req, res) => {
+  console.log("get about data call");
+  try {
+    const id = req.params.schoolID;
+    console.log("About sID: ", id);
+    // Find the reviews for the given school ID
+    const reviews = await SchoolReviews.find({ schoolID: id });
+    console.log("aa");
+    if (reviews.length === 0) {
+      return res.status(404).json({ error: "Reviews not found" });
+    }
+
+    res.json(reviews);
+  } catch (error) {
+    console.error("Error getting reviews:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 });

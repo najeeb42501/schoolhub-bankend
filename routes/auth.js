@@ -59,6 +59,7 @@ router.post("/createUserProfile", async (req, res) => {
     const user = new AllUsers({
       _id: newUser._id,
       email,
+      username,
       password,
       type,
     });

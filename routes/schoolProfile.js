@@ -8,6 +8,7 @@ const SchoolCurriculum = require("../models/edit-school-profile/schoolCurriculum
 const SchoolActivities = require("../models/edit-school-profile/schoolActivitiesModel");
 const SchoolFee = require("../models/edit-school-profile/schoolFeeStructureModel");
 const AboutSchool = require("../models/edit-school-profile/schoolAboutModel");
+const UserReview = require("../models/edit-school-profile/userReviewModel.js");
 
 const uploads = require("../middlewares/upload.js");
 
@@ -295,6 +296,28 @@ router.put("/save-school-about-data/:id", async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to update school profile" });
+  }
+});
+
+// Define a route to handle POST requests for creating a new review
+router.post("/reviews/:schoolID", async (req, res) => {
+  const schoolID = req.params.schoolID;
+  const { userName, review, rating } = req.body;
+
+  console.log("reviews api called", schoolID, req.body);
+  try {
+    // const { reviewerName, comment, rating } = req.body;
+    const Review = new UserReview({
+      reviewerName: userName,
+      comment: review,
+      rating,
+      schoolID: schoolID,
+    });
+    await Review.save();
+    res.status(201).json({ message: "Review submitted successfully" });
+  } catch (error) {
+    console.error("Error submitting review:", error);
+    res.status(500).json({ message: "Failed to submit review" });
   }
 });
 

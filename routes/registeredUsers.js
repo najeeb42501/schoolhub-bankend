@@ -46,6 +46,8 @@ router.post("/login", async (req, res) => {
     return res.status(400).json({ message: "Incorrect password" });
   }
 
+  
+
   // If login is successful, return user data and success message
   res.json({ user, message: "Login Successful" });
 });
