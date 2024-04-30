@@ -4,6 +4,7 @@ const router = express.Router();
 const Schools = require("../models/schoolModel");
 const AllUsers = require("../models/allUsersModel");
 const Users = require("../models/userModel");
+const Blogs = require("../models/blogsModel");
 
 router.post("/createSchoolProfile", async (req, res) => {
   console.log("Signup request call");
@@ -46,6 +47,70 @@ router.post("/createSchoolProfile", async (req, res) => {
     res.status(500).json({ message: "Server Error" });
   }
 });
+router.post("/add-blogs", async (req, res) => {
+  console.log("add blogs api call");
+  try {
+    // Check if the blog already exists by title
+    let existingBlog = await Blogs.findOne({ _id: req.body._id });
+
+    if (existingBlog) {
+      // Update the existing blog
+      existingBlog.title = req.body.title;
+      existingBlog.content = req.body.content;
+      existingBlog.author = req.body.author;
+
+      // Save the updated blog
+      const updatedBlog = await existingBlog.save();
+
+      res.status(200).json(updatedBlog);
+    } else {
+      // Create a new blog using the data from the request body
+      const newBlog = new Blogs({
+        title: req.body.title,
+        content: req.body.content,
+        author: req.body.author,
+      });
+
+      // Save the new blog to the database
+      const savedBlog = await newBlog.save();
+
+      res.status(201).json(savedBlog);
+    }
+  } catch (error) {
+    console.error("Error saving or updating blog:", error);
+    res.status(500).json({ error: "Failed to save or update blog" });
+  }
+});
+
+router.get("/get-blogs", async (req, res) => {
+  console.log("get blogs api call");
+  try {
+    const blogs = await Blogs.find();
+    res.status(200).json(blogs);
+  } catch (error) {
+    console.error("Error fetching schools:", error);
+    res.status(500).json({ message: "Server Error" });
+  }
+});
+
+router.get("/blog/:id", async (req, res) => {
+  console.log("blog get by id api called");
+  const blogId = req.params.id;
+
+  console.log("blog id ", blogId);
+
+  try {
+    const blog = await Blogs.findById(blogId); // Assuming Blog is your Mongoose model
+    if (!blog) {
+      return res.status(404).json({ message: "Blog not found" });
+    }
+
+    res.json(blog);
+  } catch (error) {
+    console.error("Error fetching blog by ID:", error);
+    res.status(500).json({ message: "Failed to fetch blog" });
+  }
+});
 
 router.get("/schools", async (req, res) => {
   try {
@@ -63,6 +128,18 @@ router.get("/users", async (req, res) => {
     res.status(200).json(schools);
   } catch (error) {
     console.error("Error fetching schools:", error);
+    res.status(500).json({ message: "Server Error" });
+  }
+});
+
+router.get("/all-users", async (req, res) => {
+  try {
+    const allUsers = await AllUsers.find({}, { createdAt: 1, type: 1 });
+    // const schools = allUsers.filter((user) => user.type === "school");
+    // const users = allUsers.filter((user) => user.type === "user");
+    res.status(200).json(allUsers);
+  } catch (error) {
+    console.error("Error fetching users:", error);
     res.status(500).json({ message: "Server Error" });
   }
 });
