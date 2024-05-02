@@ -146,6 +146,8 @@ router.put("/save-school-contact-data/:id", async (req, res) => {
     schoolEmail,
     schoolWebsite,
     schoolAddress,
+    longitude,
+    latitude,
   } = req.body;
 
   console.log(schoolMobileNo);
@@ -159,6 +161,8 @@ router.put("/save-school-contact-data/:id", async (req, res) => {
         schoolEmail,
         schoolWebsite,
         schoolAddress,
+        longitude,
+        latitude,
       });
 
       await schoolContact.save();
@@ -170,6 +174,8 @@ router.put("/save-school-contact-data/:id", async (req, res) => {
     schoolContact.schoolEmail = schoolEmail;
     schoolContact.schoolWebsite = schoolWebsite;
     schoolContact.schoolAddress = schoolAddress;
+    schoolContact.longitude = longitude;
+    schoolContact.latitude = latitude;
 
     await schoolContact.save();
     return res.status(200).json({ saved: true, data: schoolContact });
@@ -302,23 +308,53 @@ router.put("/save-school-about-data/:id", async (req, res) => {
 // Define a route to handle POST requests for creating a new review
 router.post("/reviews/:schoolID", async (req, res) => {
   const schoolID = req.params.schoolID;
-  const { userName, review, rating } = req.body;
+  const { userName, generalReview, ratings } = req.body; // Extract ratings object and review text from the request body
 
-  console.log("reviews api called", schoolID, req.body);
+  console.log("save reviews api called", schoolID, req.body);
   try {
-    // const { reviewerName, comment, rating } = req.body;
-    const Review = new UserReview({
-      reviewerName: userName,
-      comment: review,
-      rating,
+    // Create a new review instance using the UserReview model
+    const newReview = new UserReview({
       schoolID: schoolID,
+      reviewerName: userName,
+      comment: generalReview,
+      ratings: ratings, // Use the ratings object directly as it matches the structure expected by the schema
     });
-    await Review.save();
+
+    // Save the new review to the database
+    await newReview.save();
+
+    // Send a success response back to the client
     res.status(201).json({ message: "Review submitted successfully" });
   } catch (error) {
     console.error("Error submitting review:", error);
     res.status(500).json({ message: "Failed to submit review" });
   }
 });
+
+router.post(
+  "/save-school-gallery-images/:id",
+  uploads.array("images"),
+  async (req, res) => {
+    try {
+      console.log("School gallery images save data call");
+
+      const images = req.files;
+
+      if (!images || images.length === 0) {
+        return res.status(400).json({ message: "No images uploaded" });
+      }
+
+      images.forEach((image, index) => {
+        console.log(`Image ${index + 1}: ${image.filename}`);
+        // Save the image filename or path to the database or perform other operations
+      });
+
+      res.status(200).json({ message: "Images saved successfully" });
+    } catch (error) {
+      console.error("Error saving images:", error);
+      res.status(500).json({ message: "Failed to save images" });
+    }
+  }
+);
 
 module.exports = router;

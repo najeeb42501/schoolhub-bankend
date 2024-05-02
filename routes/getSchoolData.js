@@ -140,7 +140,7 @@ router.get("/school-about/:schoolID", async (req, res) => {
 });
 
 router.get("/school-reviews/:schoolID", async (req, res) => {
-  console.log("get about data call");
+  console.log("get school reviews call");
   try {
     const id = req.params.schoolID;
     console.log("About sID: ", id);

@@ -24,6 +24,14 @@ const schoolAdmissionSchema = new Schema({
     type: String,
     required: true,
   },
+  latitude: {
+    type: Number,
+    required: true,
+  },
+  longitude: {
+    type: Number,
+    required: true,
+  },
 });
 
 const SchoolContact = mongoose.model(

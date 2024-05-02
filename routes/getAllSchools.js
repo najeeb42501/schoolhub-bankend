@@ -51,15 +51,13 @@ router.get("/schools", async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
-
-// GET request to fetch combined school data
 router.get("/allSchools", async (req, res) => {
   console.log("Api schools merging call data");
   try {
     const result = await Schools.aggregate([
       {
         $lookup: {
-          from: "schools_overviews", // Ensure this matches the actual collection name in MongoDB
+          from: "schools_overviews",
           localField: "_id",
           foreignField: "schoolId",
           as: "overview",
@@ -69,17 +67,46 @@ router.get("/allSchools", async (req, res) => {
         $unwind: "$overview",
       },
       {
+        $lookup: {
+          from: "school_contact_details",
+          localField: "_id",
+          foreignField: "schoolID",
+          as: "contactDetails",
+        },
+      },
+      {
+        $unwind: "$contactDetails",
+      },
+      {
+        $lookup: {
+          from: "schools_curriculum_details",
+          localField: "_id",
+          foreignField: "schoolID",
+          as: "curriculumDetails",
+        },
+      },
+      {
+        $unwind: {
+          path: "$curriculumDetails",
+          preserveNullAndEmptyArrays: true, // Optionally preserve schools with no curriculum details
+        },
+      },
+      {
         $project: {
           schoolID: "$_id",
-          schoolName: "$overview.schoolName", // Assuming you want the school's name from the schools collection
+          schoolName: "$overview.schoolName",
           schoolCity: "$city",
           schoolProfilePhoto: "$overview.schoolProfilePhoto",
           schoolLevel: "$overview.schoolLevel",
-          schoolMedium: "$overview.schoolMedium", // Assuming 'medium' maps to 'schoolMedium'
-          schoolSystem: "$overview.schoolSystem", // Assuming 'System' maps to 'schoolSystem'
-          schoolType: "$overview.schoolingType", // Assuming 'type' maps to 'schoolingType'
+          schoolMedium: "$overview.schoolMedium",
+          schoolSystem: "$overview.schoolSystem",
+          schoolType: "$overview.schoolingType",
           enrolledStudents: "$overview.enrolledStudents",
-          teachers: "$overview.numberOfTeachers", // Assuming 'teachers' maps to 'numberOfTeachers'
+          teachers: "$overview.numberOfTeachers",
+          schoolAddress: "$contactDetails.schoolAddress",
+          latitude: "$contactDetails.latitude",
+          longitude: "$contactDetails.longitude",
+          curriculums: "$curriculumDetails.courses", // Include the courses array
         },
       },
     ]);
