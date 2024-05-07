@@ -10,6 +10,7 @@ const SchoolActivities = require("../models/edit-school-profile/schoolActivities
 const SchoolFee = require("../models/edit-school-profile/schoolFeeStructureModel");
 const SchoolAbout = require("../models/edit-school-profile/schoolAboutModel");
 const SchoolReviews = require("../models/edit-school-profile/userReviewModel.js");
+const SchoolGallery = require("../models/edit-school-profile/schoolGalleryModel.js");
 
 // GET route to fetch school overview data
 router.get("/school-overview/:schoolID", async (req, res) => {
@@ -43,6 +44,26 @@ router.get("/school-admission/:schoolID", async (req, res) => {
   } catch (error) {
     console.error("Error fetching school admission data:", error);
     res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+// Route to get gallery images by school ID
+router.get("/get-school-gallery-images/:id", async (req, res) => {
+  const { id } = req.params;
+  console.log("get school galerry images call");
+
+  try {
+    const gallery = await SchoolGallery.findOne({
+      schoolID: id,
+    });
+    if (gallery) {
+      res.status(200).json(gallery.images);
+    } else {
+      res.status(404).send("Gallery not found for this school ID");
+    }
+  } catch (error) {
+    console.error("Error retrieving gallery images:", error);
+    res.status(500).send("Server error while retrieving images");
   }
 });
 

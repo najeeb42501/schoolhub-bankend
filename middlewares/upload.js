@@ -7,7 +7,7 @@ const storage = multer.diskStorage({
       cb(null, "public/images");
     } else if (file.fieldname === "coverPhoto") {
       cb(null, "public/images");
-    } else if (file.fieldname === "images") {
+    } else if (file.fieldname === "images[]") {
       cb(null, "public/gallery");
     }
   },

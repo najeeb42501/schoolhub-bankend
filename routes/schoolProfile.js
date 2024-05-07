@@ -8,6 +8,7 @@ const SchoolCurriculum = require("../models/edit-school-profile/schoolCurriculum
 const SchoolActivities = require("../models/edit-school-profile/schoolActivitiesModel");
 const SchoolFee = require("../models/edit-school-profile/schoolFeeStructureModel");
 const AboutSchool = require("../models/edit-school-profile/schoolAboutModel");
+const SchoolGallery = require("../models/edit-school-profile/schoolGalleryModel.js");
 const UserReview = require("../models/edit-school-profile/userReviewModel.js");
 
 const uploads = require("../middlewares/upload.js");
@@ -89,6 +90,40 @@ router.put(
     } catch (error) {
       console.error("Error saving school data:", error);
       res.status(500).json({ message: "Internal server error" });
+    }
+  }
+);
+
+router.post(
+  "/save-school-gallery-images/:id",
+  uploads.array("images[]"),
+  async (req, res) => {
+    console.log("School gallery images save data call");
+    const { id } = req.params;
+    const imageFilenames = req.files.map((file) => file.filename); // Extract filenames from uploaded files
+
+    try {
+      // Find the document with the given schoolId
+      const gallery = await SchoolGallery.findOne({
+        schoolID: id,
+      });
+
+      if (gallery) {
+        // If the gallery exists, push the new images to the existing array
+        gallery.images.push(...imageFilenames);
+        await gallery.save(); // Save the updated document
+        res.status(200).send("Images added to existing gallery successfully");
+      } else {
+        // If no gallery exists for this schoolId, inform the client
+        res
+          .status(404)
+          .send(
+            "No gallery found for this school ID. Please create a gallery first."
+          );
+      }
+    } catch (error) {
+      console.error("Error handling images:", error);
+      res.status(500).send("Server error while handling images");
     }
   }
 );
@@ -330,31 +365,5 @@ router.post("/reviews/:schoolID", async (req, res) => {
     res.status(500).json({ message: "Failed to submit review" });
   }
 });
-
-router.post(
-  "/save-school-gallery-images/:id",
-  uploads.array("images"),
-  async (req, res) => {
-    try {
-      console.log("School gallery images save data call");
-
-      const images = req.files;
-
-      if (!images || images.length === 0) {
-        return res.status(400).json({ message: "No images uploaded" });
-      }
-
-      images.forEach((image, index) => {
-        console.log(`Image ${index + 1}: ${image.filename}`);
-        // Save the image filename or path to the database or perform other operations
-      });
-
-      res.status(200).json({ message: "Images saved successfully" });
-    } catch (error) {
-      console.error("Error saving images:", error);
-      res.status(500).json({ message: "Failed to save images" });
-    }
-  }
-);
 
 module.exports = router;
