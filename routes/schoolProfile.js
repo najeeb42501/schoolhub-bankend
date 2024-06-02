@@ -93,7 +93,6 @@ router.put(
     }
   }
 );
-
 router.post(
   "/save-school-gallery-images/:id",
   uploads.array("images[]"),
@@ -104,23 +103,23 @@ router.post(
 
     try {
       // Find the document with the given schoolId
-      const gallery = await SchoolGallery.findOne({
+      let gallery = await SchoolGallery.findOne({
         schoolID: id,
       });
 
       if (gallery) {
         // If the gallery exists, push the new images to the existing array
         gallery.images.push(...imageFilenames);
-        await gallery.save(); // Save the updated document
-        res.status(200).send("Images added to existing gallery successfully");
       } else {
-        // If no gallery exists for this schoolId, inform the client
-        res
-          .status(404)
-          .send(
-            "No gallery found for this school ID. Please create a gallery first."
-          );
+        // If no gallery exists for this schoolId, create a new document
+        gallery = new SchoolGallery({
+          schoolID: id,
+          images: imageFilenames,
+        });
       }
+
+      await gallery.save(); // Save the document (either new or updated)
+      res.status(200).send("Images added to gallery successfully");
     } catch (error) {
       console.error("Error handling images:", error);
       res.status(500).send("Server error while handling images");

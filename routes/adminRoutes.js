@@ -1,5 +1,6 @@
 // adminRoutes.js
 const express = require("express");
+const mongoose = require("mongoose");
 const router = express.Router();
 const Schools = require("../models/schoolModel");
 const AllUsers = require("../models/allUsersModel");
@@ -47,35 +48,40 @@ router.post("/createSchoolProfile", async (req, res) => {
     res.status(500).json({ message: "Server Error" });
   }
 });
+
 router.post("/add-blogs", async (req, res) => {
   console.log("add blogs api call");
   try {
-    // Check if the blog already exists by title
-    let existingBlog = await Blogs.findOne({ _id: req.body._id });
+    const { _id, title, content, author } = req.body;
 
-    if (existingBlog) {
-      // Update the existing blog
-      existingBlog.title = req.body.title;
-      existingBlog.content = req.body.content;
-      existingBlog.author = req.body.author;
+    if (_id && mongoose.Types.ObjectId.isValid(_id)) {
+      // Check if the blog already exists by _id
+      let existingBlog = await Blogs.findOne({ _id });
 
-      // Save the updated blog
-      const updatedBlog = await existingBlog.save();
+      if (existingBlog) {
+        // Update the existing blog
+        existingBlog.title = title;
+        existingBlog.content = content;
+        existingBlog.author = author;
 
-      res.status(200).json(updatedBlog);
-    } else {
-      // Create a new blog using the data from the request body
-      const newBlog = new Blogs({
-        title: req.body.title,
-        content: req.body.content,
-        author: req.body.author,
-      });
+        // Save the updated blog
+        const updatedBlog = await existingBlog.save();
 
-      // Save the new blog to the database
-      const savedBlog = await newBlog.save();
-
-      res.status(201).json(savedBlog);
+        return res.status(200).json(updatedBlog);
+      }
     }
+
+    // Create a new blog using the data from the request body
+    const newBlog = new Blogs({
+      title,
+      content,
+      author,
+    });
+
+    // Save the new blog to the database
+    const savedBlog = await newBlog.save();
+
+    res.status(201).json(savedBlog);
   } catch (error) {
     console.error("Error saving or updating blog:", error);
     res.status(500).json({ error: "Failed to save or update blog" });

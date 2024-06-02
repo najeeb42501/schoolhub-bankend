@@ -76,6 +76,7 @@ router.post("/createUserProfile", async (req, res) => {
 });
 
 router.post("/login", async (req, res) => {
+  console.log("login api called");
   const { email, password } = req.body;
 
   const user = await AllUsers.findOne({ email });
